@@ -3,8 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Login Registration</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'login_reg_db/styles.css' %}">
 </head>
 <body>
-    <h1>shrimps linguine</h1>
+    <div id="wrapper">
+        <h1>Login</h1>
+        <form action="/process" id="dojo" method='post'>
+            {% csrf_token %}
+            <div id="labels">
+                <p>Email:</p>
+                <p>Password:</p>
+            </div>
+            <div id="labelforms">
+                <input type="text" name="email">
+                <input type="text" name="password">
+            </div>
+        </form>
+        <button type="submit" form="dojo">Submit</button>
+        <h1>Registration</h1>
+        <form action="/process" id="dojo" method='post'>
+            {% csrf_token %}
+            <div id="labels">
+                <p>Email:</p>
+                <p>First Name:</p>
+                <p>Last Name:</p>
+                <!-- <p>Birthdate (mm/dd/yyyy):</p> -->
+                <p>Password:</p>
+                <p>Confirm Password:</p>
+            </div>
+            <div id="labelforms">
+                <input type="text" name="email">
+                <input type="text" name="first_name">
+                <input type="text" name="last_name">
+                <!-- <input type="text" name="birthdate"> -->
+                <input type="text" name="password">
+                <input type="text" name="confirm_password">
+            </div>
+        </form>
+        <button type="submit" form="dojo">Submit</button>
+    </div><!-- /#wrapper  -->
 </body>
 </html>

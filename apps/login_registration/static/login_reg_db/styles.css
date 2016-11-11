@@ -1,0 +1,25 @@
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial';
+}
+#wrapper {
+    width: 500px;
+    height: 500px;
+    margin: 100px auto;
+}
+#labels, #labelforms {
+    display: inline-block;
+    vertical-align: top;
+}
+#labelforms input, select {
+    display: block;
+    width: 130px;
+}
+#labelforms input {
+    margin-bottom: 2px;
+}
+#left, #right {
+    display: inline-block;
+    width: 200px;
+}
