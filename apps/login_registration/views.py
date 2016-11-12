@@ -3,6 +3,7 @@ from .models import User
 import re
 import bcrypt
 from django.contrib import messages
+from django.core.exceptions import ObjectDoesNotExist
 import hashlib
 
 
@@ -14,8 +15,6 @@ def index(request):
 def process(request):
     errors = []
     user = User.objects.filter(email=request.POST['email'])
-    user_id = User.objects.filter(email=request.POST['email']).id
-    request.session['user_id'] = user_id
 
 
     if not request.POST['email']:
@@ -26,12 +25,12 @@ def process(request):
         errors.append('Email is already in use.')
 
     if not request.POST['first_name']:
-        errors.append("First name cannot not be blank.")
+        errors.append("First name cannot not not be blank.")
     elif not request.POST['last_name']:
-        errors.append("Last name cannot not be blank.")
+        errors.append("Last name cannot not not be blank.")
 
     if not request.POST['password']:
-        errors.append("Password cannot not be blank.")
+        errors.append("Password cannot not not be blank.")
     elif len(request.POST['password']) < 8:
         errors.append("Password must be at least 8 characters.")
     elif request.POST['password'] != request.POST['confirm']:
@@ -43,34 +42,35 @@ def process(request):
         return redirect('/')
     else:
         User.objects.create(email=request.POST['email'], first_name=request.POST['first_name'], last_name=request.POST['last_name'], password=bcrypt.hashpw(request.POST['password'].encode(), bcrypt.gensalt()))
-        user_id = User.objects.filter(email=request.POST['email']).id
+        user_id = User.objects.filter(email=request.POST['email'])[0].id
         request.session['user_id'] = user_id
 
         return redirect('/success')
 
 def login(request):
     errors = []
-
-    user = User.objects.get(email=request.POST['email'])
+    user = User.objects.filter(email=request.POST['email'])
+    if not request.POST['email']:
+            errors.append("Email cannot be blank.")
+    elif not EMAIL_REGEX.match(request.POST['email']):
+            errors.append("Must be a valid email.")
+    elif not user:
+            errors.append('Email is already in use.')
+            return redirect('/')
     password = request.POST['password'].encode()
-    pw_hash = User.objects.all().filter(email = request.POST['email'])
-    pw_hash = pw_hash[0].password
-    print('**************************************************')
-    print (pw_hash)
-
-
-
-    if not user:
-        errors.append("Invalid login.")
-    elif bcrypt.hashpw(password, pw_hash.encode()) == pw_hash.encode():
-    
+    print "***********************"
+    print user
+    pw_hash = user[0].password
+    if bcrypt.hashpw(password, pw_hash.encode()) == pw_hash.encode():
         request.session["user_id"] = User.objects.get(email=request.POST['email']).id
-        print('**************************************************')
-        print(request.session["user_id"])
         return redirect("/success")
     else:
         errors.append("Invalid login.")
         return redirect('/')
+    if errors:
+        for error in errors:
+            messages.error(request, error)
+            return redirect('/')
 
 def success(request):
     if "user_id" not in request.session:
