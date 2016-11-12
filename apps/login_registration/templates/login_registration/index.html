@@ -9,7 +9,7 @@
 <body>
     <div id="wrapper">
         <h1>Login</h1>
-        <form action="/process" id="dojo" method='post'>
+        <form action="/process" id="login" method='post'>
             {% csrf_token %}
             <div id="labels">
                 <p>Email:</p>
@@ -20,9 +20,9 @@
                 <input type="text" name="password">
             </div>
         </form>
-        <button type="submit" form="dojo">Submit</button>
+        <button type="submit" form="login">Submit</button>
         <h1>Registration</h1>
-        <form action="/process" id="dojo" method='post'>
+        <form action="/process" id="register" method='post'>
             {% csrf_token %}
             <div id="labels">
                 <p>Email:</p>
@@ -41,7 +41,7 @@
                 <input type="text" name="confirm_password">
             </div>
         </form>
-        <button type="submit" form="dojo">Submit</button>
+        <button type="submit" form="register">Submit</button>
     </div><!-- /#wrapper  -->
 </body>
 </html>
