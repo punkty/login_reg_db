@@ -14,6 +14,9 @@ def index(request):
 def process(request):
     errors = []
     user = User.objects.filter(email=request.POST['email'])
+    user_id = User.objects.filter(email=request.POST['email']).id
+    request.session['user_id'] = user_id
+
 
     if not request.POST['email']:
         errors.append("Email cannot be blank.")
@@ -40,23 +43,30 @@ def process(request):
         return redirect('/')
     else:
         User.objects.create(email=request.POST['email'], first_name=request.POST['first_name'], last_name=request.POST['last_name'], password=bcrypt.hashpw(request.POST['password'].encode(), bcrypt.gensalt()))
+        user_id = User.objects.filter(email=request.POST['email']).id
+        request.session['user_id'] = user_id
 
         return redirect('/success')
 
 def login(request):
     errors = []
 
-    user = User.objects.all().filter(email=request.POST['email'])
+    user = User.objects.get(email=request.POST['email'])
+    password = request.POST['password'].encode()
+    pw_hash = User.objects.all().filter(email = request.POST['email'])
+    pw_hash = pw_hash[0].password
+    print('**************************************************')
+    print (pw_hash)
 
-    # print user[0].password
-    # print "*"*100
+
 
     if not user:
         errors.append("Invalid login.")
-    elif bcrypt.hashpw(request.POST["password"], user[0].password) == user[0].password:
-        print user[0].password
-        print "*"*100
-        request.session["user_id"] = user["id"]
+    elif bcrypt.hashpw(password, pw_hash.encode()) == pw_hash.encode():
+    
+        request.session["user_id"] = User.objects.get(email=request.POST['email']).id
+        print('**************************************************')
+        print(request.session["user_id"])
         return redirect("/success")
     else:
         errors.append("Invalid login.")
@@ -65,8 +75,10 @@ def login(request):
 def success(request):
     if "user_id" not in request.session:
         return redirect("/")
+    name = User.objects.all().filter(id = request.session['user_id'])
     context = {
-        'emails': Email.objects.all(),
+
+        'first_name': name[0].first_name
     }
     return render(request, "login_registration/success.html", context)
 
