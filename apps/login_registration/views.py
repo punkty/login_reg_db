@@ -59,16 +59,11 @@ def login(request):
             messages.error(request, error)
             return redirect('/')
 
-    print 'ASLFKJSADLKJSADL:KASJDLSA:KJDASL:KDJASLD:KJASDL:KJASDL:KJAS:LKDJAL:KDJA'
-
     if bcrypt.checkpw(request.POST['password'].encode(), user[0].password.encode()):
         request.session["user_id"] = User.objects.get(email=request.POST['email']).id
         return redirect("/success")
     else:
         errors.append("Invalid login.")
-
-
-
 
     if errors:
         for error in errors:
