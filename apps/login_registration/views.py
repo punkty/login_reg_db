@@ -49,24 +49,27 @@ def process(request):
 
 def login(request):
     errors = []
-    user = User.objects.filter(email=request.POST['email'])
-    if not request.POST['email']:
-            errors.append("Email cannot be blank.")
-    elif not EMAIL_REGEX.match(request.POST['email']):
-            errors.append("Must be a valid email.")
-    elif not user:
-            errors.append('Email is already in use.')
+    user = User.objects.all().filter(email=request.POST['email'])
+
+    if not user:
+        errors.append("Invalid login.")
+
+    if errors:
+        for error in errors:
+            messages.error(request, error)
             return redirect('/')
-    password = request.POST['password'].encode()
-    print "***********************"
-    print user
-    pw_hash = user[0].password
-    if bcrypt.hashpw(password, pw_hash.encode()) == pw_hash.encode():
+
+    print 'ASLFKJSADLKJSADL:KASJDLSA:KJDASL:KDJASLD:KJASDL:KJASDL:KJAS:LKDJAL:KDJA'
+
+    if bcrypt.checkpw(request.POST['password'].encode(), user[0].password.encode()):
         request.session["user_id"] = User.objects.get(email=request.POST['email']).id
         return redirect("/success")
     else:
         errors.append("Invalid login.")
-        return redirect('/')
+
+
+
+
     if errors:
         for error in errors:
             messages.error(request, error)
